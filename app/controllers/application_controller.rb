@@ -6,6 +6,25 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
 
+  def crearDatos(cantidad, media)
+    respuesta={ "metadata" => {},
+                "posts" => [],
+                "version" => ""
+    }
+    respuesta['metadata']=cantidad['data']['media_count']
+
+    media['data'].each do |item|
+    respuesta['posts']<<{
+     'tags'=> item['tags']
+     'username'=> item['user']['username']
+     'likes'=> item['likes']
+     'url'=> maximaResolucion(item['images'])#ver lo de la calidad
+     'caption' =>  item['caption']['text']
+    }
+    #falta ver lo de la version y lo de la calidad de las imagenes
+    #:Bad_request para lo del error de 400
+    return reponse
+  end
 
   def parametros
 
@@ -30,25 +49,7 @@ class ApplicationController < ActionController::Base
     return JSON.parse(respuest.body)
   end
 
-  def crearDatos(cantidad, media)
-    respuesta={ "metadata" => {},
-                "posts" => [],
-                "version" => ""
-    }
-    respuesta['metadata']=cantidad['data']['media_count']
-
-    media['data'].each do |item|
-    respuesta['posts']<<{
-      'tags'=> item['tags']
-      'username'=> item['user']['username']
-      'likes'=> item['likes']
-      'url'=> maximaResolucion(item['images']) #ver lo de la calidad
-      'caption' =>  item['caption']['text']
-    }
-    #falta ver lo de la version y lo de la calidad de las imagenes
-    #:Bad_request para lo del error de 400
-    return reponse
-  end
+ 
 
   def maximaResolucion(imagen)
     if imagen.has_key?('standard_resolution')
@@ -59,6 +60,6 @@ class ApplicationController < ActionController::Base
       return imagen['thumbnail']['url']
     end
   end
-       
+  end     
   # protect_from_forgery with: :exception
 end
